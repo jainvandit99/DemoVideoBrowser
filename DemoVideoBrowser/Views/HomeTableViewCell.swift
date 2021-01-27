@@ -14,7 +14,7 @@ class HomeTableViewCell: UITableViewCell {
 
     
     let layout:UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-    lazy var collectionView: UICollectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: bounds.width, height: 200), collectionViewLayout: layout)
+    lazy var collectionView: UICollectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: UIApplication.shared.windows.first?.frame.width ?? bounds.width, height: 200), collectionViewLayout: layout)
     
     var videoURLs: [String]? {
         didSet {

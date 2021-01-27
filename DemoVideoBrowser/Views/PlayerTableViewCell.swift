@@ -24,7 +24,9 @@ class PlayerTableViewCell: UITableViewCell {
         thumbnailImageView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
         thumbnailImageView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         thumbnailImageView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        playerLayer.frame = CGRect(x: 0, y: 0, width: bounds.width, height: UIApplication.shared.windows.first?.frame.height ?? 0)
+        thumbnailImageView.contentMode = .scaleAspectFill
+        playerLayer.frame = CGRect(x: 0, y: 0, width: UIApplication.shared.windows.first?.frame.width ?? bounds.width, height: UIApplication.shared.windows.first?.frame.height ?? bounds.height)
+        playerLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         self.layer.addSublayer(playerLayer)
     }
     

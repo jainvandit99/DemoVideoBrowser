@@ -65,8 +65,12 @@ class HomeViewController: UIViewController, collectionViewCellDelegate {
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     
     func registerTableView(){
-        tableView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
+        tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(HomeTableViewCell.self, forCellReuseIdentifier: "HomeTableViewCell")
