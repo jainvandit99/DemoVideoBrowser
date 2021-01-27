@@ -11,4 +11,4 @@ Project as part of an interview. Attached screenshots of the application running
   <img height="300" src="Assets/SS3.png">
 </p>
 
-A working demo video of the application can be found [here](https://raw.githubusercontent.com/jainvandit99/DemoVideoBrowser/main/Assets/screenGrab.mov)
+A working demo video of the application can be found [here](https://raw.githubusercontent.com/jainvandit99/DemoVideoBrowser/main/Assets/ScreenRecord.mov)
