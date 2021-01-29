@@ -66,7 +66,9 @@ extension HomeTableViewCell: UICollectionViewDelegate, UICollectionViewDataSourc
             return UICollectionViewCell()
         }
         let thumbnailProvider = VideoThumbnailImageProvider(url: URL(string: videoURLs?[indexPath.row] ?? "")!, size: CGSize(width: 103.5, height: 184))
-        cell.imageView.kf.setImage(with: thumbnailProvider, placeholder: UIImage(named: "thumbnail.svg"))
+
+        cell.imageView.kf.indicatorType = .activity
+        cell.imageView.kf.setImage(with: thumbnailProvider, placeholder: UIImage(named: "thumbnail.svg"), options: [.transition(.fade(1))])
         cell.hero.id = ""
         return cell
     }
