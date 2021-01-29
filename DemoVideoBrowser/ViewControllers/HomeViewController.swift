@@ -74,6 +74,8 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(HomeTableViewCell.self, forCellReuseIdentifier: "HomeTableViewCell")
+        tableView.backgroundColor = UIColor.clear
+        tableView.sectionIndexBackgroundColor = UIColor.clear
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -94,8 +96,23 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         return viewModel.videoData.count
     }
     
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return viewModel.videoData[section].title
+//    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+//        return viewModel.videoData[section].title
+//    }
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let returnedView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 30))
+        if #available(iOS 13.0, *) {
+            returnedView.backgroundColor = .systemBackground
+        } else {
+            returnedView.backgroundColor = .white
+        }
+
+        let label = UILabel(frame: CGRect(x: 16, y: 0, width: tableView.frame.width - 16, height: 30))
+
+        label.text = viewModel.videoData[section].title
+        returnedView.addSubview(label)
+
+        return returnedView
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

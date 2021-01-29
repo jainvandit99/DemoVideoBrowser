@@ -49,7 +49,7 @@ extension HomeTableViewCell: UICollectionViewDelegate, UICollectionViewDataSourc
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
         self.collectionView.register(HomeCollectionViewCell.self, forCellWithReuseIdentifier: "HomeCollectionViewCell")
-        self.collectionView.backgroundColor = UIColor.white
+        self.collectionView.backgroundColor = UIColor.clear
         print("Initialising Collection View....")
     }
     

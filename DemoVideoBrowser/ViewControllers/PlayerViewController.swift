@@ -8,21 +8,23 @@
 import UIKit
 import AVKit
 import Hero
-
+import NVActivityIndicatorView
 class PlayerViewController: UIViewController {
 
     
     var videoURLs: [String]?
     var selectedIndex: Int?
     var player: AVPlayer?
+    var playerLayer: AVPlayerLayer?
     var visibleIP : IndexPath?
     var aboutToBecomeInvisibleCell = -1
     let tableView = UITableView()
+    let indicatorView = NVActivityIndicatorView(frame: .zero)
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpTableView()
         setupBackButton()
-        
+        indicatorView.startAnimating()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -39,6 +41,10 @@ class PlayerViewController: UIViewController {
         BackButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(BackButton)
         
+        indicatorView.frame = CGRect(x: view.frame.width/2 - 20, y: view.frame.height/2 - 20, width: 40, height: 40)
+        indicatorView.type = .ballClipRotatePulse
+        indicatorView.color = .purple
+        view.addSubview(indicatorView)
         BackButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16).isActive = true
         BackButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 48).isActive = true
         BackButton.widthAnchor.constraint(equalToConstant: 25).isActive = true
@@ -68,7 +74,23 @@ class PlayerViewController: UIViewController {
         self.hero.isEnabled = true
         tableView.hero.id = "SELECTED!"
     }
+    
+    override public func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath == "timeControlStatus", let change = change, let newValue = change[NSKeyValueChangeKey.newKey] as? Int, let oldValue = change[NSKeyValueChangeKey.oldKey] as? Int {
+            let oldStatus = AVPlayer.TimeControlStatus(rawValue: oldValue)
+            let newStatus = AVPlayer.TimeControlStatus(rawValue: newValue)
+            if newStatus != oldStatus {
+                if newStatus == .playing || newStatus == .paused {
+                    indicatorView.stopAnimating()
+                } else {
+                    indicatorView.startAnimating()
+                }
+            }
+        }
+    }
 }
+
+
 
 extension PlayerViewController: UITableViewDelegate, UITableViewDataSource {
     
@@ -80,17 +102,22 @@ extension PlayerViewController: UITableViewDelegate, UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "PlayerTableViewCell") as? PlayerTableViewCell, let videoURLs = videoURLs else {
             return UITableViewCell()
         }
-        let videoURL: URL = URL(string: videoURLs[indexPath.row]) ?? URL(string: "www.google.com")!
-        player = AVPlayer(url: videoURL)
-        cell.playerLayer.player = player
         if let url = URL(string: videoURLs[indexPath.row]) {
             let thumbnailProvider = VideoThumbnailImageProvider(url: url, size: CGSize(width: 103.5, height: 184))
             cell.thumbnailImageView.kf.setImage(with: thumbnailProvider)
         }
+        if indexPath.row == selectedIndex {
+            let videoURL: URL = URL(string: videoURLs[indexPath.row]) ?? URL(string: "www.google.com")!
+            player = AVPlayer(url: videoURL)
+            player?.addObserver(self, forKeyPath: "timeControlStatus", options: [.old, .new], context: nil)
+            cell.playerLayer.player = player
+        }
         let selectedIndex = self.selectedIndex ?? 0
         if(selectedIndex == 0 && indexPath.row == 0){
+            self.player = cell.playerLayer.player
             cell.startPlayback()
         }
+        
         return cell
     }
 
@@ -128,6 +155,12 @@ extension PlayerViewController: UITableViewDelegate, UITableViewDataSource {
                     if visibleIP != indexPaths?[i]{
                         visibleIP = indexPaths?[i]
                         if let videoCell = cells[i] as? PlayerTableViewCell{
+                            videoCell.playerLayer.isHidden = false
+                            let videoURL: URL = URL(string: videoURLs?[visibleIP?.row ?? 0] ?? "") ?? URL(string: "www.google.com")!
+                            player = AVPlayer(url: videoURL)
+                            player?.addObserver(self, forKeyPath: "timeControlStatus", options: [.old, .new], context: nil)
+                            videoCell.playerLayer.player = player
+                            self.player = videoCell.playerLayer.player
                             self.playVideoOnTheCell(cell: videoCell, indexPath: (indexPaths?[i])!)
                         }
                     }
@@ -136,6 +169,7 @@ extension PlayerViewController: UITableViewDelegate, UITableViewDataSource {
                     if aboutToBecomeInvisibleCell != indexPaths?[i].row{
                         aboutToBecomeInvisibleCell = (indexPaths?[i].row)!
                         if let videoCell = cells[i] as? PlayerTableViewCell{
+                            videoCell.playerLayer.isHidden = true
                             self.stopPlayBack(cell: videoCell, indexPath: (indexPaths?[i])!)
                         }
 
