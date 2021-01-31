@@ -41,8 +41,8 @@ class PlayerViewController: UIViewController {
         view.addSubview(networkIssueView)
         networkIssueView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         networkIssueView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        networkIssueView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        networkIssueView.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        networkIssueView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
+        networkIssueView.heightAnchor.constraint(equalToConstant: 30).isActive = true
 
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -51,7 +51,7 @@ class PlayerViewController: UIViewController {
         label.centerYAnchor.constraint(equalTo: networkIssueView.centerYAnchor).isActive = true
         label.text = "No Internet Connection"
         label.textColor = .white
-        label.font = UIFont.systemFont(ofSize: 8)
+        label.font = UIFont.systemFont(ofSize: 12)
         
         if reachability.connection == .unavailable {
             networkIssueView.isHidden = false
@@ -105,8 +105,8 @@ class PlayerViewController: UIViewController {
         indicatorView.type = .ballClipRotatePulse
         indicatorView.color = .purple
         view.addSubview(indicatorView)
-        BackButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16).isActive = true
-        BackButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 48).isActive = true
+        BackButton.leftAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leftAnchor, constant: 16).isActive = true
+        BackButton.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 48).isActive = true
         BackButton.widthAnchor.constraint(equalToConstant: 25).isActive = true
         BackButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
         BackButton.setImage(UIImage(named: "back"), for: .normal)
@@ -208,6 +208,7 @@ extension PlayerViewController: UITableViewDelegate, UITableViewDataSource {
                 visibleIP = indexPaths?[0]
             }
             if let videoCell = cells.last! as? PlayerTableViewCell{
+                videoCell.playerLayer.isHidden = false
                 self.playVideoOnTheCell(cell: videoCell, indexPath: (indexPaths?.last)!)
             }
         }

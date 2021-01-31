@@ -47,7 +47,7 @@ class HomeViewController: UIViewController, collectionViewCellDelegate {
         networkIssueView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         networkIssueView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         networkIssueView.topAnchor.constraint(equalTo: guide.topAnchor).isActive = true
-        networkIssueView.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        networkIssueView.heightAnchor.constraint(equalToConstant: 30).isActive = true
 
         
         let label = UILabel()
@@ -57,7 +57,7 @@ class HomeViewController: UIViewController, collectionViewCellDelegate {
         label.centerYAnchor.constraint(equalTo: networkIssueView.centerYAnchor).isActive = true
         label.text = "No Internet Connection"
         label.textColor = .white
-        label.font = UIFont.systemFont(ofSize: 8)
+        label.font = UIFont.systemFont(ofSize: 12)
         
         if reachability.connection == .unavailable {
             networkIssueView.isHidden = false
@@ -84,16 +84,16 @@ class HomeViewController: UIViewController, collectionViewCellDelegate {
     
     @objc func reachabilityChanged(note: Notification) {
 
-      let reachability = note.object as! Reachability
-
-      switch reachability.connection {
-      case .unavailable:
-        self.networkIssueView.isHidden = false
-        break
-      default:
-        self.networkIssueView.isHidden = true
-        self.tableView.reloadData()
-      }
+        if let reachability = note.object as? Reachability {
+            switch reachability.connection {
+            case .unavailable:
+              self.networkIssueView.isHidden = false
+              break
+            default:
+              self.networkIssueView.isHidden = true
+              self.tableView.reloadData()
+            }
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
