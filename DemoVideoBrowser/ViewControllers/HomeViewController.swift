@@ -75,6 +75,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         tableView.dataSource = self
         tableView.register(HomeTableViewCell.self, forCellReuseIdentifier: "HomeTableViewCell")
         tableView.backgroundColor = UIColor.clear
+        tableView.separatorStyle = .none
         tableView.sectionIndexBackgroundColor = UIColor.clear
     }
     
@@ -96,9 +97,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         return viewModel.videoData.count
     }
     
-//    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-//        return viewModel.videoData[section].title
-//    }
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let returnedView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 30))
         if #available(iOS 13.0, *) {
