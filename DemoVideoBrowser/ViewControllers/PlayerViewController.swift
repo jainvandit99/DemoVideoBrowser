@@ -20,6 +20,11 @@ class PlayerViewController: UIViewController {
     var aboutToBecomeInvisibleCell = -1
     let tableView = UITableView()
     let indicatorView = NVActivityIndicatorView(frame: .zero)
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpTableView()
@@ -68,6 +73,7 @@ class PlayerViewController: UIViewController {
         tableView.rowHeight = tableView.frame.height
         tableView.contentInsetAdjustmentBehavior  = UIScrollView.ContentInsetAdjustmentBehavior.never
         tableView.showsVerticalScrollIndicator = false
+        tableView.separatorStyle = .none
         let selectedIndex = self.selectedIndex ?? 0
         visibleIP = IndexPath.init(row: selectedIndex, section: 0)
         tableView.hero.isEnabled = true
