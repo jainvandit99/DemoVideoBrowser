@@ -9,6 +9,8 @@ import UIKit
 import AVKit
 import Hero
 import NVActivityIndicatorView
+import Reachability
+
 class PlayerViewController: UIViewController {
 
     
@@ -20,6 +22,9 @@ class PlayerViewController: UIViewController {
     var aboutToBecomeInvisibleCell = -1
     let tableView = UITableView()
     let indicatorView = NVActivityIndicatorView(frame: .zero)
+    let networkIssueView = UIView()
+    let reachability = try! Reachability()
+
     
     override var prefersStatusBarHidden: Bool {
         return true
@@ -30,6 +35,33 @@ class PlayerViewController: UIViewController {
         setUpTableView()
         setupBackButton()
         indicatorView.startAnimating()
+        
+        networkIssueView.backgroundColor = .systemRed
+        networkIssueView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(networkIssueView)
+        networkIssueView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        networkIssueView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        networkIssueView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        networkIssueView.heightAnchor.constraint(equalToConstant: 20).isActive = true
+
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        networkIssueView.addSubview(label)
+        label.centerXAnchor.constraint(equalTo: networkIssueView.centerXAnchor).isActive = true
+        label.centerYAnchor.constraint(equalTo: networkIssueView.centerYAnchor).isActive = true
+        label.text = "No Internet Connection"
+        label.textColor = .white
+        label.font = UIFont.systemFont(ofSize: 8)
+        
+        if reachability.connection == .unavailable {
+            networkIssueView.isHidden = false
+            if indicatorView.isAnimating {
+                indicatorView.stopAnimating()
+            }
+        }
+        else {
+            networkIssueView.isHidden = true
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -39,6 +71,29 @@ class PlayerViewController: UIViewController {
             let indexPath = IndexPath(row: selectedIndex, section: 0)
             self.tableView.scrollToRow(at: indexPath, at: .top, animated: false)
         }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(reachabilityChanged(note:)), name: .reachabilityChanged, object: reachability)
+        do{
+          try reachability.startNotifier()
+        }catch{
+          print("could not start reachability notifier")
+        }
+    }
+    
+    @objc func reachabilityChanged(note: Notification) {
+
+      let reachability = note.object as! Reachability
+
+      switch reachability.connection {
+      case .unavailable:
+        self.networkIssueView.isHidden = false
+        if indicatorView.isAnimating {
+            indicatorView.stopAnimating()
+        }
+        break
+      default:
+        self.networkIssueView.isHidden = true
+      }
     }
     
     private func setupBackButton(){
@@ -64,8 +119,13 @@ class PlayerViewController: UIViewController {
     
     private func setUpTableView(){
         tableView.isHidden = true
-        tableView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
+        tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+
         tableView.register(PlayerTableViewCell.self, forCellReuseIdentifier: "PlayerTableViewCell")
         tableView.delegate = self
         tableView.dataSource = self

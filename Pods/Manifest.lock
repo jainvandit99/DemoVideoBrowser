@@ -4,23 +4,27 @@ PODS:
   - NVActivityIndicatorView (5.1.1):
     - NVActivityIndicatorView/Base (= 5.1.1)
   - NVActivityIndicatorView/Base (5.1.1)
+  - ReachabilitySwift (5.0.0)
 
 DEPENDENCIES:
   - Hero
   - Kingfisher (~> 6.0)
   - NVActivityIndicatorView
+  - ReachabilitySwift
 
 SPEC REPOS:
   trunk:
     - Hero
     - Kingfisher
     - NVActivityIndicatorView
+    - ReachabilitySwift
 
 SPEC CHECKSUMS:
   Hero: b7385b75e7259da62f4f85462f59a5082d66b058
   Kingfisher: adde87a4f74f6a3845395769354efff593581740
   NVActivityIndicatorView: 1f6c5687f1171810aa27a3296814dc2d7dec3667
+  ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
 
-PODFILE CHECKSUM: f5b7e63e12efa9af7f77eca7187479f8e2bd1834
+PODFILE CHECKSUM: 1b7fee8a1abb10ad73c3437fc6d6b91591556092
 
 COCOAPODS: 1.10.0

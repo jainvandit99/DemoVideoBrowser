@@ -9,6 +9,7 @@ target 'DemoVideoBrowser' do
   pod 'Kingfisher', '~> 6.0'
   pod 'Hero'
   pod 'NVActivityIndicatorView'
+  pod 'ReachabilitySwift'
 
   target 'DemoVideoBrowserTests' do
     inherit! :search_paths
