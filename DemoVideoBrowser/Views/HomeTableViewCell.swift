@@ -14,7 +14,7 @@ class HomeTableViewCell: UITableViewCell {
 
     
     let layout:UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-    lazy var collectionView: UICollectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: UIApplication.shared.windows.first?.frame.width ?? bounds.width, height: 200), collectionViewLayout: layout)
+    lazy var collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
     
     var videoURLs: [String]? {
         didSet {
@@ -40,16 +40,22 @@ class HomeTableViewCell: UITableViewCell {
 extension HomeTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func initialiseCollectionView(){
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
         layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         layout.scrollDirection = UICollectionView.ScrollDirection.horizontal
         layout.sectionInset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
         self.collectionView.showsHorizontalScrollIndicator = false
         self.collectionView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(collectionView)
+        collectionView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+        collectionView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
+        collectionView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        collectionView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
         self.collectionView.register(HomeCollectionViewCell.self, forCellWithReuseIdentifier: "HomeCollectionViewCell")
-        self.collectionView.backgroundColor = UIColor.white
+        self.collectionView.backgroundColor = UIColor.clear
         print("Initialising Collection View....")
     }
     
@@ -66,7 +72,9 @@ extension HomeTableViewCell: UICollectionViewDelegate, UICollectionViewDataSourc
             return UICollectionViewCell()
         }
         let thumbnailProvider = VideoThumbnailImageProvider(url: URL(string: videoURLs?[indexPath.row] ?? "")!, size: CGSize(width: 103.5, height: 184))
-        cell.imageView.kf.setImage(with: thumbnailProvider, placeholder: UIImage(named: "thumbnail.svg"))
+
+        cell.imageView.kf.indicatorType = .activity
+        cell.imageView.kf.setImage(with: thumbnailProvider, placeholder: UIImage(named: "thumbnail.svg"), options: [.transition(.fade(1))])
         cell.hero.id = ""
         return cell
     }

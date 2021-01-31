@@ -7,6 +7,7 @@
 
 import UIKit
 import Hero
+import Reachability
 
 class HomeViewController: UIViewController, collectionViewCellDelegate {
     
@@ -14,6 +15,8 @@ class HomeViewController: UIViewController, collectionViewCellDelegate {
     var videoURLs: [String]?
     var selectedIndex: Int?
     var selectedSection: Int?
+    let networkIssueView = UIView()
+    let reachability = try! Reachability()
     
     func pressedCard(videoURLs: [String], selectedIndex: Int, selectedSection: Int) {
         self.videoURLs = videoURLs
@@ -37,12 +40,65 @@ class HomeViewController: UIViewController, collectionViewCellDelegate {
     func setUpViews(){
         registerTableView()
         setupNavBar()
+        let guide = self.view.safeAreaLayoutGuide
+        networkIssueView.backgroundColor = .systemRed
+        networkIssueView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(networkIssueView)
+        networkIssueView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        networkIssueView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        networkIssueView.topAnchor.constraint(equalTo: guide.topAnchor).isActive = true
+        networkIssueView.heightAnchor.constraint(equalToConstant: 30).isActive = true
+
+        
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        networkIssueView.addSubview(label)
+        label.centerXAnchor.constraint(equalTo: networkIssueView.centerXAnchor).isActive = true
+        label.centerYAnchor.constraint(equalTo: networkIssueView.centerYAnchor).isActive = true
+        label.text = "No Internet Connection"
+        label.textColor = .white
+        label.font = UIFont.systemFont(ofSize: 12)
+        
+        if reachability.connection == .unavailable {
+            networkIssueView.isHidden = false
+        }
+        else {
+            networkIssueView.isHidden = true
+        }
     }
     
     func setupNavBar(){
         navigationItem.title = "Explore"
         navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationController?.hero.isEnabled = true
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(self, selector: #selector(reachabilityChanged(note:)), name: .reachabilityChanged, object: reachability)
+        do{
+          try reachability.startNotifier()
+        }catch{
+          print("could not start reachability notifier")
+        }
+    }
+    
+    @objc func reachabilityChanged(note: Notification) {
+
+        if let reachability = note.object as? Reachability {
+            switch reachability.connection {
+            case .unavailable:
+              self.networkIssueView.isHidden = false
+              break
+            default:
+              self.networkIssueView.isHidden = true
+              self.tableView.reloadData()
+            }
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        reachability.stopNotifier()
+        NotificationCenter.default.removeObserver(self, name: .reachabilityChanged, object: reachability)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -59,6 +115,10 @@ class HomeViewController: UIViewController, collectionViewCellDelegate {
             }
         }
     }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        self.view.setNeedsUpdateConstraints()
+    }
 }
 
 //TableViews
@@ -74,6 +134,8 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(HomeTableViewCell.self, forCellReuseIdentifier: "HomeTableViewCell")
+        tableView.backgroundColor = UIColor.clear
+        tableView.separatorStyle = .none
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -94,8 +156,20 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         return viewModel.videoData.count
     }
     
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return viewModel.videoData[section].title
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let returnedView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 30))
+        if #available(iOS 13.0, *) {
+            returnedView.backgroundColor = .systemBackground
+        } else {
+            returnedView.backgroundColor = .white
+        }
+
+        let label = UILabel(frame: CGRect(x: 16, y: 0, width: tableView.frame.width - 16, height: 30))
+
+        label.text = viewModel.videoData[section].title
+        returnedView.addSubview(label)
+
+        return returnedView
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
